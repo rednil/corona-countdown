@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <style>
+      h1 {
+        margin-block-end: 0;
+      }
+      progress {
+        width: 100%;
+      }
+      h1:not(.title), .label, .percent {
+        color: grey;
+      }
+      .title, #countdown {
+        font-size: xxx-large;
+        font-weight: bold;
+      }
+      body, .content {
+        display: flex;
+        flex-direction: column;
+      }
+      body {
+        justify-content: space-between;
+        height: 100%;
+      }
+      section, .source {
+        margin: auto;
+        text-align: center;
+      }
+      .data {
+        font-size: 2em;
+        font-weight: bold;
+      }
+    </style>
+    <meta http-equiv="refresh" content="1000">
+  </head>
+<body>
+  <div class="content">
+    <section>
+      <h1 class="title">Corona Countdown</h1>
+      <progress></progress>
+      <div>
+        <div class="data" id="countdown"></div>
+        <div class="label">(Sekunden bis zur Herdenimmunität)</div>
+      </div>
+    </section>
+    <section>
+      <h1>Erstimpfungen</h1>
+      <div>
+        <div class="data" id="firstShots"></div>
+        <div class="percent" id="firstShotPercent"></div>
+      </div>
+    </section>
+    <section>
+      <h1>Zweitimpfungen</h1>
+      <div>
+        <div class="data" id="secondShots"></div>
+        <div class="percent" id="secondShotPercent"></div>
+      </div>
+    </section>
+    <section>
+      <h1>Herdenimmunität (66%)</h1>
+      <div>
+        <div class="data" id="herdImmunityDate"></div>
+        <div class=label>(Beim Durchschnittstempo der letzten 7 Tage)</div>
+      </div>
+    </section>
+  </div>
+  <div class="source">Quelle: <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Impfquotenmonitoring.html">RKI</a>, letztes Update: <span id="lastUpdate"></span></div>
+  <script>
+    const data = /* ### DATA ### */
+    function rate(shot, days) {
+      return data.entries.slice(-days).reduce((acc, entry) => acc + entry[shot], 0) / days
+    }
+    function format(number) {
+      return Math.round(number).toLocaleString()
+    }
+    function percent(number) {
+      return Math.round(number*10000)/100 + '%'
+    }
+    function insert(id, str) {
+      document.querySelector(id).textContent = str
+    }
+    function formatDate(date){
+      return date.toLocaleString().split(',')[0]
+    }
+    function update() {
+      const daysSinceLastEntry = (new Date() - lastEntry) / millisecondsPerDay - 1
+      const firstShots = data.total[0] + daysSinceLastEntry * firstShotRate
+      const secondShots = data.total[1] + daysSinceLastEntry * secondShotRate
+      let daysToGo = (required - firstShots) / firstShotRate + 21
+      const herdImmunityDate = new Date()
+      herdImmunityDate.setDate(herdImmunityDate.getDate() + daysToGo)
+      progressNode.value = firstShots/required
+      insert('#herdImmunityDate', formatDate(herdImmunityDate))
+      insert('#firstShots', format(firstShots))
+      insert('#firstShotPercent', `(${percent(firstShots/population)})`)
+      insert('#secondShots', format(secondShots))
+      insert('#secondShotPercent', `(${percent(secondShots/population)})`)
+      insert('#countdown', format(((required - firstShots) / firstShotRate + 21) * 24 * 60 *60))
+    }
+    const lastEntry = new Date(data.entries.slice(-1)[0][0] + ' 00:00:00')
+    const lastUpdate = new Date(lastEntry)
+    lastUpdate.setDate(lastUpdate.getDate()+1)
+    const millisecondsPerDay = 24 * 60 * 60 * 1000
+    const progressNode = document.querySelector('progress')
+    const firstShotRate = rate(1, 7)
+    const secondShotRate = rate(2, 7)
+    const firstShotInterval = millisecondsPerDay / firstShotRate
+    const secondShotInterval = millisecondsPerDay / secondShotRate
+    const population = 83100000
+    const herdImmunity = 0.66
+    const required = population * herdImmunity
+    insert('#lastUpdate', formatDate(lastUpdate))
+    update()
+    setInterval(update.bind(this), 1000)
+  </script>
+</body>
