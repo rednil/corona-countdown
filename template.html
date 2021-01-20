@@ -95,13 +95,13 @@
       let daysToGo = (required - firstShots) / firstShotRate + 21
       const herdImmunityDate = new Date()
       herdImmunityDate.setDate(herdImmunityDate.getDate() + daysToGo)
-      progressNode.value = firstShots/required
+      progressNode.value = secondShots/required
       insert('#herdImmunityDate', formatDate(herdImmunityDate))
       insert('#firstShots', format(firstShots))
       insert('#firstShotPercent', `(${percent(firstShots/population)})`)
       insert('#secondShots', format(secondShots))
       insert('#secondShotPercent', `(${percent(secondShots/population)})`)
-      insert('#countdown', format(((required - firstShots) / firstShotRate + 21) * 24 * 60 *60))
+      insert('#countdown', format(daysToGo * 24 * 60 * 60))
     }
     const lastEntry = new Date(data.entries.slice(-1)[0][0] + ' 00:00:00')
     const lastUpdate = new Date(lastEntry)
