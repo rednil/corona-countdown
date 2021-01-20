@@ -1,6 +1,6 @@
-<html>
+<html lang="de">
   <head>
-    <meta http-equiv="refresh" content="1000">
+    <meta http-equiv="refresh" content="3600">
     <meta charset="utf-8">
     <title>Corona Countdown</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -85,9 +85,6 @@
     function insert(id, str) {
       document.querySelector(id).textContent = str
     }
-    function formatDate(date){
-      return date.toLocaleString().split(',')[0]
-    }
     function update() {
       const daysSinceLastEntry = (new Date() - lastEntry) / millisecondsPerDay - 1
       const firstShots = data.total[0] + daysSinceLastEntry * firstShotRate
@@ -96,7 +93,7 @@
       const herdImmunityDate = new Date()
       herdImmunityDate.setDate(herdImmunityDate.getDate() + daysToGo)
       progressNode.value = secondShots/required
-      insert('#herdImmunityDate', formatDate(herdImmunityDate))
+      insert('#herdImmunityDate', herdImmunityDate.toLocaleDateString())
       insert('#firstShots', format(firstShots))
       insert('#firstShotPercent', `(${percent(firstShots/population)})`)
       insert('#secondShots', format(secondShots))
@@ -115,7 +112,7 @@
     const population = 83100000
     const herdImmunity = 0.66
     const required = population * herdImmunity
-    insert('#lastUpdate', formatDate(lastUpdate))
+    insert('#lastUpdate', lastUpdate.toLocaleDateString())
     update()
     setInterval(update.bind(this), 1000)
   </script>
