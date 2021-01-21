@@ -93,7 +93,7 @@
       const herdImmunityDate = new Date()
       herdImmunityDate.setDate(herdImmunityDate.getDate() + daysToGo)
       progressNode.value = secondShots/required
-      insert('#herdImmunityDate', herdImmunityDate.toLocaleDateString())
+      insert('#herdImmunityDate', herdImmunityDate.toLocaleString('de', {day: 'numeric', month: 'long', year: 'numeric'}))
       insert('#firstShots', format(firstShots))
       insert('#firstShotPercent', `(${percent(firstShots/population)})`)
       insert('#secondShots', format(secondShots))
