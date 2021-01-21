@@ -7,13 +7,13 @@ fs.readFile('impf.csv', 'utf8', (err, csv) => {
     lines.slice(1).forEach(line => {
       try{
         const data = line.split(',')
-        if(data[0].match(/\d\d\d\d-\d\d-\d\d/)) entries.push([data[0], Number(data[1]), Number(data[2])])
-        if(data[0].match(/gesamt/)) total = [Number(data[1]), Number(data[2])]
+        if(data[0].match(/\d\d\d\d-\d\d-\d\d/) && data[1]>0) entries.push([data[0], Number(data[1]), Number(data[2])])
+        if(data[0].match(/Gesamt/)) total = [Number(data[1]), Number(data[2])]
       }catch(e){}
     })
     if(entries.length < 10) throw 'Faulty data, quitting'
     fs.readFile('template.html', 'utf8', (err, template) => {
-        const index = template.replace('/* ### DATA ### */', JSON.stringify({entries, total}))
+        const index = template.replace('/* ### DATA ### */', JSON.stringify({entries: entries.slice(-10), total}, null, ' '))
         fs.writeFile('index.html', index, () => {
           console.log(`Data successfully parsed. Last entry: ${entries[entries.length-1][0]}`)
         })
